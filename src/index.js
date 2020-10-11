@@ -7,11 +7,12 @@ const app = express()
 const port = process.env.PORT || 3000
 
 app.use(express.json())
+
+// REST API here
 app.use(userRouter)
 app.use(taskRouter)
 
-// REST API here
-
+// and start the server
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`)
 })
