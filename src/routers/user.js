@@ -3,22 +3,18 @@ const multer = require('multer')
 const sharp = require('sharp')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
+const { sendWelcomeEmail, sendGoodbyeEmail } = require('../emails/account')
 
 const router = new express.Router()
-
 
 router.post('/users', async (req, res) => {
   const user = new User(req.body)
 
   try {
-    // see if the user exists already
-    const existingUser = await User.findOne({ email: req.body.email })
-    if (existingUser) {
-      // user already exists!
-      return res.status(400).send(new Error('User already exists!'))
-    }
-
+    await user.save()
+    sendWelcomeEmail(user.email, user.name)
     const token = await user.generateAuthToken()
+
     res.status(201).send({ user, token })
   } catch (error) {
     res.status(400).send(error)
@@ -83,6 +79,7 @@ router.patch('/users/me', auth, async (req, res) => {
 router.delete('/users/me', auth, async (req, res) => {
   try {
     await req.user.remove()
+    sendGoodbyeEmail(req.user.email, req.user.name)
     res.send(req.user)
   } catch (error) {
     res.status(400).send()
