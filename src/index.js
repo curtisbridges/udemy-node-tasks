@@ -1,16 +1,5 @@
-const express = require('express')
-require('./db/mongoose') // ensures mongoose connects, nothing else
-const userRouter = require('./routers/user')
-const taskRouter = require('./routers/task')
-
-const app = express()
-const port = process.env.PORT || 3000
-
-app.use(express.json())
-
-// REST API here
-app.use(userRouter)
-app.use(taskRouter)
+const app = require('./app')
+const port = process.env.PORT
 
 // and start the server
 app.listen(port, () => {
